@@ -69,7 +69,9 @@ def parseCommandLineArguments():
     parser.add_argument( "--compute_character_n_grams", "-ccng",
                          help="Prompts the program to calculate character n-grams. Output will be provided both in the form of a pickled generator dump and in the form of a human readable text.",
                          nargs="+" )
-
+    parser.add_argument("--case_insensitive","-no_case",action='store_true',
+                        help="Setting this option will perform case insensitive character n grams")
+    
     parser.add_argument( "--lowercase", "-lower", action='store_true',
                          help="Converts the text to lowercase and then performs case-insensitive analysis" )
     
@@ -432,7 +434,6 @@ def main():
         performMixedWordPOSnGram(options.input,options.output_directory,options.tag_word_and_parts_of_speech_n_grams,options.list_of_POS_preserved)
     if options.perform_dependency_parsing!=False:
         performDependencyParsing(options.input,options.output_directory)
-    # Trying
 
 if __name__ == "__main__":
     main()
