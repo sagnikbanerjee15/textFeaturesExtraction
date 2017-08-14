@@ -34,7 +34,8 @@ from enchant.checker import SpellChecker
 from nltk.metrics.distance import edit_distance
 from nltk.tokenize import sent_tokenize
 import re
-
+from collections import OrderedDict
+from operator import itemgetter
 verbosity = 1
 
 
@@ -143,9 +144,11 @@ def computeWordNSkipGrams(text, n, k_, output_dir):
             if verbosity == 4:
                 print( "Starting generation of Word N Skip Grams for ngram=", ngram, "and skip=", k )
             generator_obj = nltk.FreqDist( skipgrams( tokenizedText, int( ngram ), int( k ) ) )
-            pickle.dump( generator_obj, open( output_dir + "/word_nskipgram_" + ngram + "_" + k + ".pickle", "wb" ) )
+            d = {c: count for c,count in generator_obj.items()}
+            d=OrderedDict(sorted(d.items(), key=itemgetter(1),reverse=True))
+            pickle.dump( d, open( output_dir + "/word_nskipgram_" + ngram + "_" + k + ".pickle", "wb" ) )
             fhw = open( output_dir + "/word_nskipgram_" + ngram + "_" + k + ".txt", "w" )
-            for obj, count in generator_obj.items():
+            for obj, count in d.items():
                 fhw.write( str( obj ) + ":" + str( count ) + "\n" )
 
 def computeWordNGrams(text, n, output_dir):
@@ -154,9 +157,16 @@ def computeWordNGrams(text, n, output_dir):
         if verbosity == 4:
             print( "Starting generation of Word N grams for ngram=", ngram )
         generator_obj = nltk.FreqDist( ngrams( tokenizedText, int( ngram ) ) )
-        pickle.dump( generator_obj, open( output_dir + "/word_ngram_" + ngram + ".pickle", "wb" ) )
+        
+        """for c,count in generator_obj.items():
+            print(c,count)"""
+        d = {c: count for c,count in generator_obj.items()}
+        d=OrderedDict(sorted(d.items(), key=itemgetter(1),reverse=True))
+        pickle.dump( d, open( output_dir + "/word_ngram_" + ngram + ".pickle", "wb" ) )
+        """for key in d:
+            print(key,d[key])"""
         fhw = open( output_dir + "/word_ngram_" + ngram + ".txt", "w" )
-        for obj, count in generator_obj.items():
+        for obj, count in d.items():
             fhw.write( str( obj ) + ":" + str( count ) + "\n" )
 
 def computeCharacterNGrams(text, n, output_dir):
@@ -166,9 +176,11 @@ def computeCharacterNGrams(text, n, output_dir):
         if verbosity == 4:
             print( "Starting generation of character N grams for ngram=", ngram )
         generator_obj = nltk.FreqDist( ngrams( chars, int( ngram ) ) )
-        pickle.dump( generator_obj, open( output_dir + "/char_ngram_" + ngram + ".pickle", "wb" ) )
+        d = {c: count for c,count in generator_obj.items()}
+        d=OrderedDict(sorted(d.items(), key=itemgetter(1),reverse=True))
+        pickle.dump( d, open( output_dir + "/char_ngram_" + ngram + ".pickle", "wb" ) )
         fhw = open( output_dir + "/char_ngram_" + ngram + ".txt", "w" )
-        for obj, count in generator_obj.items():
+        for obj, count in d.items():
             fhw.write( str( obj ) + ":" + str( count ) + "\n" )
 
 def checkInputFile(filename):
@@ -261,6 +273,8 @@ def tagPartsOfSpeech(text,filename,output_dir=""):
         fhw=open(output_dir+"/"+name.split(".")[0]+"_POS."+name.split(".")[-1],"w")
         for ele in tagged_doc:
             fhw.write(str(ele))
+            if str(ele)=="('.', '.')":
+                fhw.write("\n")
         #fhw.write()
         fhw.close()
     return tagged_doc
@@ -284,10 +298,11 @@ def tagPOSNGram(text,filename,output_dir,n):
     tokenizedText = nltk.word_tokenize( tag_text )
     for ngram in n:
         generator_obj = nltk.FreqDist( ngrams( tokenizedText, int( ngram ) ) )
-        
-        pickle.dump( generator_obj, open( output_dir + "/POS_ngram_" + ngram + ".pickle", "wb" ) )
+        d = {c: count for c,count in generator_obj.items()}
+        d=OrderedDict(sorted(d.items(), key=itemgetter(1),reverse=True))
+        pickle.dump( d, open( output_dir + "/POS_ngram_" + ngram + ".pickle", "wb" ) )
         fhw = open( output_dir + "/POS_ngram_" + ngram + ".txt", "w" )
-        for obj, count in generator_obj.items():
+        for obj, count in d.items():
             fhw.write( str( obj ) + ":" + str( count ) + "\n" )
         fhw.close()
 
@@ -337,9 +352,11 @@ def performMixedWordPOSnGram(filename,output_dir,n,POS_preserved):
         if verbosity == 4:
             print( "Starting generation of Word N grams for ngram=", ngram )
         generator_obj = nltk.FreqDist( ngrams( tokenizedText, int( ngram ) ) )
-        pickle.dump( generator_obj, open( output_dir + "/mixed_word_ngram_pos_" + ngram + ".pickle", "wb" ) )
+        d = {c: count for c,count in generator_obj.items()}
+        d=OrderedDict(sorted(d.items(), key=itemgetter(1),reverse=True))
+        pickle.dump( d, open( output_dir + "/mixed_word_ngram_pos_" + ngram + ".pickle", "wb" ) )
         fhw = open( output_dir + "/mixed_word_ngram_pos_" + ngram + ".txt", "w" )
-        for obj, count in generator_obj.items():
+        for obj, count in d.items():
             fhw.write( str( obj ) + ":" + str( count ) + "\n" )
 
 def performDependencyParsing(filename,output_dir):

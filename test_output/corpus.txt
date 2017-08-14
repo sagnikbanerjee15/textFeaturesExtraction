@@ -1,0 +1,1 @@
+../test_input/doc1_n.txt ../test_input/doc2_n.txt
